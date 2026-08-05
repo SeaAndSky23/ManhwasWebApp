@@ -1,0 +1,170 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using ManhwasWebApp.Data;
+using ManhwasWebApp.Models;
+
+namespace ManhwasWebApp.Controllers
+{
+    public class ManhwaAutorsController : Controller
+    {
+        private readonly ManhwasContext _context;
+
+        public ManhwaAutorsController(ManhwasContext context)
+        {
+            _context = context;
+        }
+
+        // GET: ManhwaAutors
+        public async Task<IActionResult> Index()
+        {
+            var manhwasContext = _context.ManhwaAutors.Include(m => m.IdAutorNavigation).Include(m => m.IdManhwaNavigation);
+            return View(await manhwasContext.ToListAsync());
+        }
+
+        // GET: ManhwaAutors/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var manhwaAutor = await _context.ManhwaAutors
+                .Include(m => m.IdAutorNavigation)
+                .Include(m => m.IdManhwaNavigation)
+                .FirstOrDefaultAsync(m => m.IdManhwa == id);
+            if (manhwaAutor == null)
+            {
+                return NotFound();
+            }
+
+            return View(manhwaAutor);
+        }
+
+        // GET: ManhwaAutors/Create
+        public IActionResult Create()
+        {
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor");
+            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa");
+            return View();
+        }
+
+        // POST: ManhwaAutors/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(manhwaAutor);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
+            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
+            return View(manhwaAutor);
+        }
+
+        // GET: ManhwaAutors/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var manhwaAutor = await _context.ManhwaAutors.FindAsync(id);
+            if (manhwaAutor == null)
+            {
+                return NotFound();
+            }
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
+            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
+            return View(manhwaAutor);
+        }
+
+        // POST: ManhwaAutors/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
+        {
+            if (id != manhwaAutor.IdManhwa)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(manhwaAutor);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ManhwaAutorExists(manhwaAutor.IdManhwa))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
+            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
+            return View(manhwaAutor);
+        }
+
+        // GET: ManhwaAutors/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var manhwaAutor = await _context.ManhwaAutors
+                .Include(m => m.IdAutorNavigation)
+                .Include(m => m.IdManhwaNavigation)
+                .FirstOrDefaultAsync(m => m.IdManhwa == id);
+            if (manhwaAutor == null)
+            {
+                return NotFound();
+            }
+
+            return View(manhwaAutor);
+        }
+
+        // POST: ManhwaAutors/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var manhwaAutor = await _context.ManhwaAutors.FindAsync(id);
+            if (manhwaAutor != null)
+            {
+                _context.ManhwaAutors.Remove(manhwaAutor);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ManhwaAutorExists(int id)
+        {
+            return _context.ManhwaAutors.Any(e => e.IdManhwa == id);
+        }
+    }
+}
