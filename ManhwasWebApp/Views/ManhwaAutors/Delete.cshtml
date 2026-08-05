@@ -31,7 +31,7 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Delete" asp-route-idManhwa="@Model.IdManhwa" asp-route-idAutor="@Model.IdAutor">
         <input type="hidden" asp-for="IdManhwa" />
         <input type="hidden" asp-for="IdAutor" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

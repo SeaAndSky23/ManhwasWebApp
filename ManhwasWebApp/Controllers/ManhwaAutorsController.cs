@@ -26,10 +26,10 @@ namespace ManhwasWebApp.Controllers
             return View(await manhwasContext.ToListAsync());
         }
 
-        // GET: ManhwaAutors/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: ManhwaAutors/Details/5/3
+        public async Task<IActionResult> Details(int? idManhwa, int? idAutor)
         {
-            if (id == null)
+            if (idManhwa == null || idAutor == null)
             {
                 return NotFound();
             }
@@ -37,7 +37,7 @@ namespace ManhwasWebApp.Controllers
             var manhwaAutor = await _context.ManhwaAutors
                 .Include(m => m.IdAutorNavigation)
                 .Include(m => m.IdManhwaNavigation)
-                .FirstOrDefaultAsync(m => m.IdManhwa == id);
+                .FirstOrDefaultAsync(m => m.IdManhwa == idManhwa && m.IdAutor == idAutor);
             if (manhwaAutor == null)
             {
                 return NotFound();
@@ -72,15 +72,16 @@ namespace ManhwasWebApp.Controllers
             return View(manhwaAutor);
         }
 
-        // GET: ManhwaAutors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        /// GET: ManhwaAutors/Edit/5/3
+        public async Task<IActionResult> Edit(int? idManhwa, int? idAutor)
         {
-            if (id == null)
+            if (idManhwa == null || idAutor == null)
             {
                 return NotFound();
             }
 
-            var manhwaAutor = await _context.ManhwaAutors.FindAsync(id);
+            var manhwaAutor = await _context.ManhwaAutors
+                .FirstOrDefaultAsync(m => m.IdManhwa == idManhwa && m.IdAutor == idAutor);
             if (manhwaAutor == null)
             {
                 return NotFound();
@@ -90,14 +91,12 @@ namespace ManhwasWebApp.Controllers
             return View(manhwaAutor);
         }
 
-        // POST: ManhwaAutors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: ManhwaAutors/Edit/5/3
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
+        public async Task<IActionResult> Edit(int idManhwa, int idAutor, [Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
         {
-            if (id != manhwaAutor.IdManhwa)
+            if (idManhwa != manhwaAutor.IdManhwa || idAutor != manhwaAutor.IdAutor)
             {
                 return NotFound();
             }
@@ -111,7 +110,7 @@ namespace ManhwasWebApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ManhwaAutorExists(manhwaAutor.IdManhwa))
+                    if (!ManhwaAutorExists(manhwaAutor.IdManhwa, manhwaAutor.IdAutor))
                     {
                         return NotFound();
                     }
@@ -127,10 +126,11 @@ namespace ManhwasWebApp.Controllers
             return View(manhwaAutor);
         }
 
-        // GET: ManhwaAutors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+
+        // GET: ManhwaAutors/Delete/5/3
+        public async Task<IActionResult> Delete(int? idManhwa, int? idAutor)
         {
-            if (id == null)
+            if (idManhwa == null || idAutor == null)
             {
                 return NotFound();
             }
@@ -138,7 +138,7 @@ namespace ManhwasWebApp.Controllers
             var manhwaAutor = await _context.ManhwaAutors
                 .Include(m => m.IdAutorNavigation)
                 .Include(m => m.IdManhwaNavigation)
-                .FirstOrDefaultAsync(m => m.IdManhwa == id);
+                .FirstOrDefaultAsync(m => m.IdManhwa == idManhwa && m.IdAutor == idAutor);
             if (manhwaAutor == null)
             {
                 return NotFound();
@@ -147,12 +147,13 @@ namespace ManhwasWebApp.Controllers
             return View(manhwaAutor);
         }
 
-        // POST: ManhwaAutors/Delete/5
+        // POST: ManhwaAutors/Delete/5/3
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int idManhwa, int idAutor)
         {
-            var manhwaAutor = await _context.ManhwaAutors.FindAsync(id);
+            var manhwaAutor = await _context.ManhwaAutors
+                .FirstOrDefaultAsync(m => m.IdManhwa == idManhwa && m.IdAutor == idAutor);
             if (manhwaAutor != null)
             {
                 _context.ManhwaAutors.Remove(manhwaAutor);
@@ -162,9 +163,9 @@ namespace ManhwasWebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ManhwaAutorExists(int id)
+        private bool ManhwaAutorExists(int idManhwa, int idAutor)
         {
-            return _context.ManhwaAutors.Any(e => e.IdManhwa == id);
+            return _context.ManhwaAutors.Any(e => e.IdManhwa == idManhwa && e.IdAutor == idAutor);
         }
     }
 }

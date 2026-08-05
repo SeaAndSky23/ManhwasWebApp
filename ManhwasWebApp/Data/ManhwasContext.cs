@@ -213,7 +213,7 @@ public partial class ManhwasContext : DbContext
                 .ToView("vw_DetalleManhwa");
 
             entity.Property(e => e.Calificacion)
-                .HasColumnType("decimal(3, 2)")
+                .HasColumnType("decimal(4, 2)")        
                 .HasColumnName("calificacion");
             entity.Property(e => e.Estado)
                 .HasMaxLength(50)
@@ -223,9 +223,7 @@ public partial class ManhwasContext : DbContext
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id_manhwa");
             entity.Property(e => e.Novela)
-                .HasMaxLength(2)
-                .IsUnicode(false)
-                .HasColumnName("novela");
+                .HasColumnName("novela");              
             entity.Property(e => e.NumeroCapitulos).HasColumnName("numero_capitulos");
             entity.Property(e => e.TituloPrincipal)
                 .HasMaxLength(255)

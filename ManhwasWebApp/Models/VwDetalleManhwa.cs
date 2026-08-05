@@ -9,7 +9,7 @@ public partial class VwDetalleManhwa
 
     public string? TituloPrincipal { get; set; }
 
-    public string? Novela { get; set; }
+    public bool? Novela { get; set; }
 
     public string? Estado { get; set; }
 
