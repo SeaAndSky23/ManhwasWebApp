@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ManhwasWebApp.Data;
 using ManhwasWebApp.Models;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace ManhwasWebApp.Controllers
 {
@@ -54,19 +56,48 @@ namespace ManhwasWebApp.Controllers
         }
 
         // POST: Manhwas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdManhwa,Novela,Sinopsis,UrlPortada,Calificacion,Estado,AnioPublicacion,NumeroCapitulos,AnioFinalizacion")] Manhwa manhwa)
+        public async Task<IActionResult> Create(ManhwaCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(manhwa);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(model);
             }
-            return View(manhwa);
+
+            var connection = _context.Database.GetDbConnection();
+
+            try
+            {
+                await connection.OpenAsync();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = "sp_RegistrarManhwaConTitulo";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@titulo", model.Titulo));
+                command.Parameters.Add(new SqlParameter("@idioma", (object?)model.Idioma ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@novela", model.Novela == true ? "1" : "0"));
+                command.Parameters.Add(new SqlParameter("@sinopsis", (object?)model.Sinopsis ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@url_portada", (object?)model.UrlPortada ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@calificacion", (object?)model.Calificacion ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@estado", (object?)model.Estado ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@anio_publicacion", (object?)model.AnioPublicacion ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@numero_capitulos", (object?)model.NumeroCapitulos ?? DBNull.Value));
+
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex)
+            {
+                ModelState.AddModelError(string.Empty, "Error al registrar el manhwa: " + ex.Message);
+                return View(model);
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Manhwas/Edit/5

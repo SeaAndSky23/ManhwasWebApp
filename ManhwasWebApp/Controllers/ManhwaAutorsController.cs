@@ -49,8 +49,10 @@ namespace ManhwasWebApp.Controllers
         // GET: ManhwaAutors/Create
         public IActionResult Create()
         {
-            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor");
-            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa");
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre");
+            ViewData["IdManhwa"] = new SelectList(
+                _context.VwDetalleManhwas.OrderBy(m => m.TituloPrincipal),
+                "IdManhwa", "TituloPrincipal");
             return View();
         }
 
@@ -86,8 +88,10 @@ namespace ManhwasWebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
-            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre", manhwaAutor.IdAutor);
+            ViewData["IdManhwa"] = new SelectList(
+                _context.VwDetalleManhwas.OrderBy(m => m.TituloPrincipal),
+                "IdManhwa", "TituloPrincipal", manhwaAutor.IdManhwa);
             return View(manhwaAutor);
         }
 

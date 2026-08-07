@@ -1,4 +1,4 @@
-﻿@model ManhwasWebApp.Models.Manhwa
+﻿@model ManhwasWebApp.Models.ManhwaCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -12,14 +12,24 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="Novela" class="control-label"></label>
-                <input asp-for="Novela" class="form-control" />
-                <span asp-validation-for="Novela" class="text-danger"></span>
+                <label asp-for="Titulo" class="control-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Idioma" class="control-label"></label>
+                <input asp-for="Idioma" class="form-control" placeholder="Ej: Español, Inglés" />
+                <span asp-validation-for="Idioma" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <input asp-for="Novela" class="form-check-input" />
+                <label asp-for="Novela" class="form-check-label"></label>
             </div>
             <div class="form-group">
                 <label asp-for="Sinopsis" class="control-label"></label>
-                <input asp-for="Sinopsis" class="form-control" />
+                <textarea asp-for="Sinopsis" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Sinopsis" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -34,7 +44,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
+                <input asp-for="Estado" class="form-control" placeholder="Ej: En emision, Finalizado" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -48,11 +58,6 @@
                 <span asp-validation-for="NumeroCapitulos" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AnioFinalizacion" class="control-label"></label>
-                <input asp-for="AnioFinalizacion" class="form-control" />
-                <span asp-validation-for="AnioFinalizacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -64,5 +69,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
