@@ -58,6 +58,31 @@
                 <span asp-validation-for="NumeroCapitulos" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="control-label">Géneros</label>
+                <div>
+                    @foreach (var genero in (List<ManhwasWebApp.Models.Genero>)ViewBag.AllGeneros)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" name="SelectedGeneros" value="@genero.IdGenero" id="genero_@genero.IdGenero" />
+                            <label class="form-check-label" for="genero_@genero.IdGenero">@genero.Nombre</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Etiquetas</label>
+                <div>
+                    @foreach (var etiqueta in (List<ManhwasWebApp.Models.Etiquetum>)ViewBag.AllEtiquetas)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" name="SelectedEtiquetas" value="@etiqueta.IdEtiqueta" id="etiqueta_@etiqueta.IdEtiqueta" />
+                            <label class="form-check-label" for="etiqueta_@etiqueta.IdEtiqueta">@etiqueta.Nombre</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

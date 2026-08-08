@@ -216,7 +216,7 @@ public partial class ManhwasContext : DbContext
                 .ToView("vw_DetalleManhwa");
 
             entity.Property(e => e.Calificacion)
-                .HasColumnType("decimal(4, 2)")        
+                .HasColumnType("decimal(4, 2)")
                 .HasColumnName("calificacion");
             entity.Property(e => e.Estado)
                 .HasMaxLength(50)
@@ -226,15 +226,26 @@ public partial class ManhwasContext : DbContext
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id_manhwa");
             entity.Property(e => e.Novela)
-                .HasColumnName("novela");              
+                .HasColumnName("novela");
+            entity.Property(e => e.Sinopsis)
+                .IsUnicode(false)
+                .HasColumnName("sinopsis");
             entity.Property(e => e.NumeroCapitulos).HasColumnName("numero_capitulos");
+            entity.Property(e => e.AnioPublicacion).HasColumnName("anio_publicacion");
+            entity.Property(e => e.AnioFinalizacion).HasColumnName("anio_finalizacion");
             entity.Property(e => e.TituloPrincipal)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("Titulo_Principal");
             entity.Property(e => e.UrlPortada)
-                 .HasMaxLength(255)
-                 .HasColumnName("url_portada");
+                .HasMaxLength(255)
+                .HasColumnName("url_portada");
+            entity.Property(e => e.Generos)
+        .IsUnicode(false)
+        .HasColumnName("Generos");
+            entity.Property(e => e.Etiquetas)
+                .IsUnicode(false)
+                .HasColumnName("Etiquetas");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -49,6 +49,10 @@
 
                     <p class="small text-muted mb-2">✍️ @item.Autores</p>
                     <p class="small text-muted">📖 @item.NumeroCapitulos capítulos</p>
+                    @if (!string.IsNullOrEmpty(item.Generos) && item.Generos != "Sin género registrado")
+                    {
+                        <p class="small text-muted mb-0">🏷️ @item.Generos</p>
+                    }
 
                     <div class="mt-auto d-flex gap-2">
                         <a asp-action="Edit" asp-route-id="@item.IdManhwa" class="btn btn-sm btn-outline-secondary">Editar</a>

@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace ManhwasWebApp.Models
 {
-    public class ManhwaCreateViewModel
+    public class ManhwaEditViewModel
     {
-        [Required(ErrorMessage = "El título es obligatorio.")]
-        [StringLength(255)]
-        public string Titulo { get; set; } = null!;
-
-        [StringLength(50)]
-        public string? Idioma { get; set; }
+        public int IdManhwa { get; set; }
 
         public bool? Novela { get; set; }
 
@@ -26,6 +21,8 @@ namespace ManhwasWebApp.Models
         public int? AnioPublicacion { get; set; }
 
         public int? NumeroCapitulos { get; set; }
+
+        public int? AnioFinalizacion { get; set; }
 
         public List<int> SelectedGeneros { get; set; } = new();
 

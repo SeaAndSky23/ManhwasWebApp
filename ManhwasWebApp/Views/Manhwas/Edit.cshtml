@@ -1,4 +1,4 @@
-﻿@model ManhwasWebApp.Models.Manhwa
+﻿@model ManhwasWebApp.Models.ManhwaEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,14 +13,14 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdManhwa" />
-            <div class="form-group">
-                <label asp-for="Novela" class="control-label"></label>
-                <input asp-for="Novela" class="form-control" />
+            <div class="form-group form-check">
+                <input asp-for="Novela" class="form-check-input" />
+                <label asp-for="Novela" class="form-check-label"></label>
                 <span asp-validation-for="Novela" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Sinopsis" class="control-label"></label>
-                <input asp-for="Sinopsis" class="form-control" />
+                <textarea asp-for="Sinopsis" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Sinopsis" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -35,7 +35,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
+                <input asp-for="Estado" class="form-control" placeholder="Ej: En emision, Finalizado" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -54,6 +54,32 @@
                 <span asp-validation-for="AnioFinalizacion" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="control-label">Géneros</label>
+                <div>
+                    @foreach (var genero in (List<ManhwasWebApp.Models.Genero>)ViewBag.AllGeneros)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" name="SelectedGeneros" value="@genero.IdGenero" id="genero_@genero.IdGenero"
+                                   checked="@(Model.SelectedGeneros.Contains(genero.IdGenero))" />
+                            <label class="form-check-label" for="genero_@genero.IdGenero">@genero.Nombre</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Etiquetas</label>
+                <div>
+                    @foreach (var etiqueta in (List<ManhwasWebApp.Models.Etiquetum>)ViewBag.AllEtiquetas)
+                    {
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" name="SelectedEtiquetas" value="@etiqueta.IdEtiqueta" id="etiqueta_@etiqueta.IdEtiqueta"
+                                   checked="@(Model.SelectedEtiquetas.Contains(etiqueta.IdEtiqueta))" />
+                            <label class="form-check-label" for="etiqueta_@etiqueta.IdEtiqueta">@etiqueta.Nombre</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -65,5 +91,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -1,4 +1,4 @@
-﻿@model ManhwasWebApp.Models.Manhwa
+﻿@model ManhwasWebApp.Models.VwDetalleManhwa
 
 @{
     ViewData["Title"] = "Delete";
@@ -11,56 +11,37 @@
     <h4>Manhwa</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Novela)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Novela)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sinopsis)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sinopsis)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UrlPortada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UrlPortada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Calificacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Calificacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AnioPublicacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AnioPublicacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumeroCapitulos)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumeroCapitulos)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AnioFinalizacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AnioFinalizacion)
-        </dd>
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.TituloPrincipal)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.TituloPrincipal)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Autores)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Autores)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Novela)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Novela)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Sinopsis)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Sinopsis)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.UrlPortada)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.UrlPortada)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Calificacion)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Calificacion)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Estado)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Estado)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.AnioPublicacion)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.AnioPublicacion)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.NumeroCapitulos)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.NumeroCapitulos)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.AnioFinalizacion)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.AnioFinalizacion)</dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="IdManhwa" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

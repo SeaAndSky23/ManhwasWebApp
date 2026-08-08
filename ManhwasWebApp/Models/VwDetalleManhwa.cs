@@ -11,12 +11,23 @@ public partial class VwDetalleManhwa
 
     public bool? Novela { get; set; }
 
+    public string? Sinopsis { get; set; }
+
     public string? Estado { get; set; }
 
     public decimal? Calificacion { get; set; }
 
     public int? NumeroCapitulos { get; set; }
+
+    public int? AnioPublicacion { get; set; }
+
+    public int? AnioFinalizacion { get; set; }
+
     public string? UrlPortada { get; set; }
 
     public string Autores { get; set; } = null!;
+
+    public string Generos { get; set; } = null!;
+
+    public string Etiquetas { get; set; } = null!;
 }
