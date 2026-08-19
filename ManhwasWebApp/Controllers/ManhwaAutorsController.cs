@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,21 +59,50 @@ namespace ManhwasWebApp.Controllers
         }
 
         // POST: ManhwaAutors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(manhwaAutor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre", manhwaAutor.IdAutor);
+                ViewData["IdManhwa"] = new SelectList(
+                    _context.VwDetalleManhwas.OrderBy(m => m.TituloPrincipal),
+                    "IdManhwa", "TituloPrincipal", manhwaAutor.IdManhwa);
+                return View(manhwaAutor);
             }
-            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
-            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
-            return View(manhwaAutor);
+
+            var connection = _context.Database.GetDbConnection();
+
+            try
+            {
+                await connection.OpenAsync();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = "sp_AsociarAutorAManhwa";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@id_manhwa", manhwaAutor.IdManhwa));
+                command.Parameters.Add(new SqlParameter("@id_autor", manhwaAutor.IdAutor));
+                command.Parameters.Add(new SqlParameter("@rol", manhwaAutor.Rol));
+
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex)
+            {
+                ModelState.AddModelError(string.Empty, "Error al asociar el autor: " + ex.Message);
+                ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre", manhwaAutor.IdAutor);
+                ViewData["IdManhwa"] = new SelectList(
+                    _context.VwDetalleManhwas.OrderBy(m => m.TituloPrincipal),
+                    "IdManhwa", "TituloPrincipal", manhwaAutor.IdManhwa);
+                return View(manhwaAutor);
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         /// GET: ManhwaAutors/Edit/5/3
