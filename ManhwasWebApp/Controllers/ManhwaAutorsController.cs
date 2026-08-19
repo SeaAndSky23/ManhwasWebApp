@@ -63,6 +63,12 @@ namespace ManhwasWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdManhwa,IdAutor,Rol")] ManhwaAutor manhwaAutor)
         {
+            // Las propiedades de navegación no se envían desde el formulario,
+            // pero al ser no-nullable, MVC las exige por defecto. Las removemos
+            // del ModelState para que no invaliden el POST.
+            ModelState.Remove(nameof(ManhwaAutor.IdAutorNavigation));
+            ModelState.Remove(nameof(ManhwaAutor.IdManhwaNavigation));
+
             if (!ModelState.IsValid)
             {
                 ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre", manhwaAutor.IdAutor);
@@ -136,6 +142,9 @@ namespace ManhwasWebApp.Controllers
                 return NotFound();
             }
 
+            ModelState.Remove(nameof(ManhwaAutor.IdAutorNavigation));
+            ModelState.Remove(nameof(ManhwaAutor.IdManhwaNavigation));
+
             if (ModelState.IsValid)
             {
                 try
@@ -156,8 +165,10 @@ namespace ManhwasWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "IdAutor", manhwaAutor.IdAutor);
-            ViewData["IdManhwa"] = new SelectList(_context.Manhwas, "IdManhwa", "IdManhwa", manhwaAutor.IdManhwa);
+            ViewData["IdAutor"] = new SelectList(_context.Autors, "IdAutor", "Nombre", manhwaAutor.IdAutor);
+            ViewData["IdManhwa"] = new SelectList(
+                _context.VwDetalleManhwas.OrderBy(m => m.TituloPrincipal),
+                "IdManhwa", "TituloPrincipal", manhwaAutor.IdManhwa);
             return View(manhwaAutor);
         }
 
