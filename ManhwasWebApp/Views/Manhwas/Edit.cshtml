@@ -10,9 +10,19 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdManhwa" />
+            <input type="hidden" asp-for="UrlPortadaActual" />
+
+            @if (!string.IsNullOrEmpty(Model.UrlPortadaActual))
+            {
+                <div class="form-group">
+                    <label class="control-label d-block">Portada actual</label>
+                    <img src="@Model.UrlPortadaActual" alt="Portada actual" style="max-width:150px; max-height:220px; object-fit:cover;" class="mb-2 border rounded" />
+                </div>
+            }
+
             <div class="form-group form-check">
                 <input asp-for="Novela" class="form-check-input" />
                 <label asp-for="Novela" class="form-check-label"></label>
@@ -24,9 +34,10 @@
                 <span asp-validation-for="Sinopsis" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UrlPortada" class="control-label"></label>
-                <input asp-for="UrlPortada" class="form-control" />
-                <span asp-validation-for="UrlPortada" class="text-danger"></span>
+                <label asp-for="PortadaFile" class="control-label">Reemplazar portada</label>
+                <input asp-for="PortadaFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+                <span asp-validation-for="PortadaFile" class="text-danger"></span>
+                <small class="form-text text-muted">Déjalo vacío para conservar la portada actual.</small>
             </div>
             <div class="form-group">
                 <label asp-for="Calificacion" class="control-label"></label>

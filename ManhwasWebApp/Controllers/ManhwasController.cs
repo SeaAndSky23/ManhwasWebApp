@@ -15,10 +15,56 @@ namespace ManhwasWebApp.Controllers
     public class ManhwasController : Controller
     {
         private readonly ManhwasContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ManhwasController(ManhwasContext context)
+        public ManhwasController(ManhwasContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
+        }
+
+        // Guarda el archivo de portada en wwwroot/images/portadas y devuelve la ruta relativa
+        private async Task<string?> GuardarPortadaAsync(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!extensionesPermitidas.Contains(extension))
+                throw new InvalidOperationException("Formato de imagen no permitido. Usa JPG, PNG o WEBP.");
+
+            if (file.Length > 5 * 1024 * 1024) // 5 MB máximo
+                throw new InvalidOperationException("La imagen no debe superar los 5MB.");
+
+            var nombreArchivo = $"{Guid.NewGuid()}{extension}";
+            var carpeta = Path.Combine(_environment.WebRootPath, "images", "portadas");
+
+            if (!Directory.Exists(carpeta))
+                Directory.CreateDirectory(carpeta);
+
+            var rutaCompleta = Path.Combine(carpeta, nombreArchivo);
+
+            using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return $"/images/portadas/{nombreArchivo}";
+        }
+
+        // Elimina el archivo físico de una portada anterior (solo si es local)
+        private void EliminarPortadaFisica(string? urlPortada)
+        {
+            if (string.IsNullOrEmpty(urlPortada) || !urlPortada.StartsWith("/images/portadas/"))
+                return;
+
+            var rutaFisica = Path.Combine(_environment.WebRootPath, urlPortada.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            if (System.IO.File.Exists(rutaFisica))
+            {
+                System.IO.File.Delete(rutaFisica);
+            }
         }
 
         // GET: Manhwas
@@ -57,7 +103,6 @@ namespace ManhwasWebApp.Controllers
             return View();
         }
 
-
         // POST: Manhwas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -65,6 +110,19 @@ namespace ManhwasWebApp.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.AllGeneros = await _context.Generos.OrderBy(g => g.Nombre).ToListAsync();
+                ViewBag.AllEtiquetas = await _context.Etiqueta.OrderBy(e => e.Nombre).ToListAsync();
+                return View(model);
+            }
+
+            string? urlPortada;
+            try
+            {
+                urlPortada = await GuardarPortadaAsync(model.PortadaFile);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(nameof(model.PortadaFile), ex.Message);
                 ViewBag.AllGeneros = await _context.Generos.OrderBy(g => g.Nombre).ToListAsync();
                 ViewBag.AllEtiquetas = await _context.Etiqueta.OrderBy(e => e.Nombre).ToListAsync();
                 return View(model);
@@ -85,7 +143,7 @@ namespace ManhwasWebApp.Controllers
                 command.Parameters.Add(new SqlParameter("@idioma", (object?)model.Idioma ?? DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@novela", model.Novela == true ? "1" : "0"));
                 command.Parameters.Add(new SqlParameter("@sinopsis", (object?)model.Sinopsis ?? DBNull.Value));
-                command.Parameters.Add(new SqlParameter("@url_portada", (object?)model.UrlPortada ?? DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@url_portada", (object?)urlPortada ?? DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@calificacion", (object?)model.Calificacion ?? DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@estado", (object?)model.Estado ?? DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@anio_publicacion", (object?)model.AnioPublicacion ?? DBNull.Value));
@@ -106,7 +164,6 @@ namespace ManhwasWebApp.Controllers
                 await connection.CloseAsync();
             }
 
-            // Asociar géneros y etiquetas seleccionados
             var manhwa = await _context.Manhwas
                 .Include(m => m.IdGeneros)
                 .Include(m => m.IdEtiqueta)
@@ -155,7 +212,7 @@ namespace ManhwasWebApp.Controllers
                 IdManhwa = manhwa.IdManhwa,
                 Novela = manhwa.Novela,
                 Sinopsis = manhwa.Sinopsis,
-                UrlPortada = manhwa.UrlPortada,
+                UrlPortadaActual = manhwa.UrlPortada,
                 Calificacion = manhwa.Calificacion,
                 Estado = manhwa.Estado,
                 AnioPublicacion = manhwa.AnioPublicacion,
@@ -198,16 +255,35 @@ namespace ManhwasWebApp.Controllers
                 return NotFound();
             }
 
+            // Si subieron una nueva portada, reemplazamos la anterior
+            if (model.PortadaFile != null && model.PortadaFile.Length > 0)
+            {
+                string? nuevaUrl;
+                try
+                {
+                    nuevaUrl = await GuardarPortadaAsync(model.PortadaFile);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError(nameof(model.PortadaFile), ex.Message);
+                    ViewBag.AllGeneros = await _context.Generos.OrderBy(g => g.Nombre).ToListAsync();
+                    ViewBag.AllEtiquetas = await _context.Etiqueta.OrderBy(e => e.Nombre).ToListAsync();
+                    return View(model);
+                }
+
+                EliminarPortadaFisica(manhwa.UrlPortada);
+                manhwa.UrlPortada = nuevaUrl;
+            }
+            // si no subieron nada nuevo, se conserva manhwa.UrlPortada tal cual estaba
+
             manhwa.Novela = model.Novela;
             manhwa.Sinopsis = model.Sinopsis;
-            manhwa.UrlPortada = model.UrlPortada;
             manhwa.Calificacion = model.Calificacion;
             manhwa.Estado = model.Estado;
             manhwa.AnioPublicacion = model.AnioPublicacion;
             manhwa.NumeroCapitulos = model.NumeroCapitulos;
             manhwa.AnioFinalizacion = model.AnioFinalizacion;
 
-            // Sincronizar géneros
             var generosActuales = manhwa.IdGeneros.Select(g => g.IdGenero).ToList();
             var generosAQuitar = manhwa.IdGeneros.Where(g => !model.SelectedGeneros.Contains(g.IdGenero)).ToList();
             foreach (var g in generosAQuitar) manhwa.IdGeneros.Remove(g);
@@ -219,7 +295,6 @@ namespace ManhwasWebApp.Controllers
                 if (genero != null) manhwa.IdGeneros.Add(genero);
             }
 
-            // Sincronizar etiquetas
             var etiquetasActuales = manhwa.IdEtiqueta.Select(e => e.IdEtiqueta).ToList();
             var etiquetasAQuitar = manhwa.IdEtiqueta.Where(e => !model.SelectedEtiquetas.Contains(e.IdEtiqueta)).ToList();
             foreach (var e in etiquetasAQuitar) manhwa.IdEtiqueta.Remove(e);
@@ -276,6 +351,7 @@ namespace ManhwasWebApp.Controllers
             var manhwa = await _context.Manhwas.FindAsync(id);
             if (manhwa != null)
             {
+                EliminarPortadaFisica(manhwa.UrlPortada);
                 _context.Manhwas.Remove(manhwa);
             }
 

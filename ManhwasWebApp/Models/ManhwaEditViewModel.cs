@@ -9,8 +9,9 @@ namespace ManhwasWebApp.Models
 
         public string? Sinopsis { get; set; }
 
-        [StringLength(255)]
-        public string? UrlPortada { get; set; }
+        public string? UrlPortadaActual { get; set; }
+
+        public IFormFile? PortadaFile { get; set; }
 
         [Range(0, 10)]
         public decimal? Calificacion { get; set; }

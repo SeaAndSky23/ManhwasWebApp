@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -33,9 +33,10 @@
                 <span asp-validation-for="Sinopsis" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UrlPortada" class="control-label"></label>
-                <input asp-for="UrlPortada" class="form-control" />
-                <span asp-validation-for="UrlPortada" class="text-danger"></span>
+                <label asp-for="PortadaFile" class="control-label">Portada</label>
+                <input asp-for="PortadaFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+                <span asp-validation-for="PortadaFile" class="text-danger"></span>
+                <small class="form-text text-muted">Formatos permitidos: JPG, PNG, WEBP. Máximo 5MB.</small>
             </div>
             <div class="form-group">
                 <label asp-for="Calificacion" class="control-label"></label>

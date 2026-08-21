@@ -28,8 +28,13 @@
         <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Sinopsis)</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.Sinopsis)</dd>
 
-        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.UrlPortada)</dt>
-        <dd class="col-sm-10">@Html.DisplayFor(model => model.UrlPortada)</dd>
+        <dt class="col-sm-2">Portada</dt>
+        <dd class="col-sm-10">
+            <img src="@(string.IsNullOrEmpty(Model.UrlPortada) ? "/images/no-cover.png" : Model.UrlPortada)"
+                 alt="Portada de @Model.TituloPrincipal"
+                 style="max-width:220px; max-height:320px; object-fit:cover;"
+                 class="border rounded shadow-sm" />
+        </dd>
 
         <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Calificacion)</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.Calificacion)</dd>
