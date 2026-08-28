@@ -1,0 +1,314 @@
+﻿* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #191919;
+    font-family: Arial, sans-serif;
+    color: #000;
+}
+
+
+/* =========================
+   ENCABEZADO
+   ========================= */
+
+.header {
+    height: 68px;
+    background-color: #191919;
+    border-bottom: 3px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+}
+
+    .header h1 {
+        color: #ff65bb;
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+
+/* BOTÓN AÑADIR */
+
+.btn-agregar {
+    background-color: #f15bb5;
+    color: white;
+    border: none;
+    border-radius: 11px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .btn-agregar:hover {
+        background-color: #ff7ac5;
+    }
+
+
+/* =========================
+   FILTROS
+   ========================= */
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 18px 42px 28px;
+}
+
+
+/* BUSCADOR */
+
+.buscador {
+    width: 47%;
+    height: 32px;
+    background-color: #555;
+    color: white;
+    border: 1px solid #777;
+    border-radius: 10px;
+    padding: 0 14px;
+    outline: none;
+}
+
+    .buscador::placeholder {
+        color: white;
+        opacity: 1;
+    }
+
+
+/* SELECT */
+
+select {
+    height: 35px;
+    background-color: #555;
+    color: white;
+    border: 1px solid #777;
+    border-radius: 8px;
+    padding: 0 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/* =========================
+   CONTENEDOR DE MANHWAS
+   ========================= */
+
+.contenedor-manhwas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 54px;
+    padding: 0 42px 35px;
+}
+
+
+/* =========================
+   TARJETA
+   ========================= */
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 14px;
+    min-width: 0;
+    height: 378px;
+}
+
+
+    /* IMAGEN */
+
+    .card img {
+        width: 100%;
+        height: 270px;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+
+    /* TÍTULO */
+
+    .card h2 {
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+
+/* ESTADO */
+
+.estado {
+    display: inline-block;
+    background-color: #777;
+    color: white;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+
+/* CALIFICACIÓN */
+
+.calificacion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.estrellas {
+    color: #ff65bb;
+    font-size: 20px;
+    letter-spacing: -3px;
+}
+
+
+/* INFORMACIÓN */
+
+.card p {
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+
+/* ETIQUETAS */
+
+.etiquetas {
+    display: flex;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+    .etiquetas span {
+        background-color: #e7c4d7;
+        padding: 3px 5px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 1000px) {
+
+    .contenedor-manhwas {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .contenedor-manhwas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filtros {
+        flex-wrap: wrap;
+    }
+
+    .buscador {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .contenedor-manhwas {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+}
+/* =========================
+   COMPLEMENTOS (vista dinámica)
+   ========================= */
+
+/* Quitar subrayado/azul por defecto en los links de la tarjeta */
+.card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Formulario de filtros ocupa todo el ancho del contenedor .filtros */
+.filtros-form {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+/* Botón de búsqueda oculto (los <select> se envían solos con onchange) */
+.btn-buscar {
+    display: none;
+}
+
+/* Acciones: Editar / Eliminar */
+.acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+    .acciones a {
+        font-size: 13px;
+        font-weight: bold;
+        color: #f15bb5;
+    }
+
+        .acciones a:hover {
+            color: #ff7ac5;
+            text-decoration: underline;
+        }
+
+/* La tarjeta tenía altura fija (378px); si el contenido crece
+   (más etiquetas, textos largos), evitamos que se corte */
+.card {
+    height: auto;
+    min-height: 378px;
+    display: flex;
+    flex-direction: column;
+}
+
+    /* Botones Editar/Eliminar siempre pegados abajo de la tarjeta */
+    .card .acciones {
+        margin-top: auto;
+        padding-top: 10px;
+    }
+
+/* El body por defecto quedaba en color: #000, mejor blanco para
+   que el texto general sobre fondo oscuro se lea bien fuera de las cards */
+body {
+    color: #fff;
+}
+
+/* Colores de estado */
+.estado-emision {
+    background-color: #b6ff3c;
+    color: #1a1a1a;
+}
+
+.estado-pausa {
+    background-color: #c9a0ff;
+    color: #1a1a1a;
+}
+
+.estado-finalizado {
+    background-color: #ff4d4d;
+    color: white;
+}

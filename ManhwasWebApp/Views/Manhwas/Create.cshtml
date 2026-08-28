@@ -45,7 +45,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" placeholder="Ej: En emision, Finalizado" />
+                <select asp-for="Estado" class="form-control">
+                    <option value="">-- Selecciona un estado --</option>
+                    <option value="En emision">En emisión</option>
+                    <option value="Pausado">Pausado</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
             <div class="form-group">

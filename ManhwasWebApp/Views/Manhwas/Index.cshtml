@@ -4,62 +4,92 @@
     ViewData["Title"] = "Mis Manhwas";
 }
 
-<h1 class="mb-4">📚 Mis Manhwas</h1>
+<header class="header">
+    <h1>Mis Manhwas</h1>
+    <a asp-action="Create" class="btn-agregar">+ AÑADIR</a>
+</header>
 
-<p>
-    <a asp-controller="Manhwas" asp-action="Create" class="btn btn-primary">+ Agregar Manhwa</a>
-</p>
+<section class="filtros">
+    <form asp-action="Index" method="get" class="filtros-form">
+        <input type="text"
+               name="busqueda"
+               placeholder="buscar por título o autor"
+               class="buscador"
+               value="@ViewBag.Busqueda" />
 
-<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        <select name="generoId" onchange="this.form.submit()">
+            <option value="">todos los géneros</option>
+            @foreach (var genero in (List<ManhwasWebApp.Models.Genero>)ViewBag.Generos)
+            {
+                <option value="@genero.IdGenero" selected="@(ViewBag.GeneroId == genero.IdGenero)">
+                    @genero.Nombre
+                </option>
+            }
+        </select>
+
+        <select name="etiquetaId" onchange="this.form.submit()">
+            <option value="">todas las etiquetas</option>
+            @foreach (var etiqueta in (List<ManhwasWebApp.Models.Etiquetum>)ViewBag.Etiquetas)
+            {
+                <option value="@etiqueta.IdEtiqueta" selected="@(ViewBag.EtiquetaId == etiqueta.IdEtiqueta)">
+                    @etiqueta.Nombre
+                </option>
+            }
+        </select>
+
+        <select name="orden" onchange="this.form.submit()">
+            <option value="">ordenar por</option>
+            <option value="titulo" selected="@(ViewBag.Orden == "titulo")">Título</option>
+            <option value="calificacion" selected="@(ViewBag.Orden == "calificacion")">Calificación</option>
+            <option value="anio" selected="@(ViewBag.Orden == "anio")">Año</option>
+        </select>
+
+        <noscript><button type="submit" class="btn-buscar">Buscar</button></noscript>
+    </form>
+</section>
+
+<main class="contenedor-manhwas">
     @foreach (var item in Model)
     {
-        string badgeClass = item.Estado switch
+        string claseEstado = item.Estado switch
         {
-            "Finalizado" => "bg-success",
-            "En emision" => "bg-primary",
-            "Pausado" => "bg-warning text-dark",
-            "Cancelado" => "bg-danger",
-            _ => "bg-secondary"
+            "En emision" => "estado-emision",
+            "Pausado" => "estado-pausa",
+            "Finalizado" => "estado-finalizado",
+            _ => ""
         };
 
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <a asp-controller="Manhwas" asp-action="Details" asp-route-id="@item.IdManhwa">
-                    <img src="@(string.IsNullOrEmpty(item.UrlPortada) ? "/images/no-cover.png" : item.UrlPortada)"
-                         class="card-img-top" alt="Portada" style="height:280px; object-fit:cover;" />
-                </a>
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">
-                        <a asp-controller="Manhwas" asp-action="Details" asp-route-id="@item.IdManhwa" class="text-decoration-none text-dark">
-                            @item.TituloPrincipal
-                        </a>
-                    </h5>
-                    <span class="badge @badgeClass mb-2" style="width:fit-content;">@item.Estado</span>
+        <article class="card">
+            <a asp-action="Details" asp-route-id="@item.IdManhwa">
+                <img src="@(string.IsNullOrEmpty(item.UrlPortada) ? "/images/no-cover.png" : item.UrlPortada)"
+                     alt="@item.TituloPrincipal">
+            </a>
+            <h2>@item.TituloPrincipal</h2>
+            <span class="estado @claseEstado">@item.Estado</span>
 
-                    <p class="text-warning mb-1">
-                        @{
-                            int estrellas = (int)Math.Round((item.Calificacion ?? 0) / 2);
-                        }
-                        @for (int i = 0; i < 5; i++)
-                        {
-                            <span>@(i < estrellas ? "★" : "☆")</span>
-                        }
-                        <span class="text-muted small">(@item.Calificacion)</span>
-                    </p>
-
-                    <p class="small text-muted mb-2">✍️ @item.Autores</p>
-                    <p class="small text-muted">📖 @item.NumeroCapitulos capítulos</p>
-                    @if (!string.IsNullOrEmpty(item.Generos) && item.Generos != "Sin género registrado")
-                    {
-                        <p class="small text-muted mb-0">🏷️ @item.Generos</p>
-                    }
-
-                    <div class="mt-auto d-flex gap-2">
-                        <a asp-action="Edit" asp-route-id="@item.IdManhwa" class="btn btn-sm btn-outline-secondary">Editar</a>
-                        <a asp-action="Delete" asp-route-id="@item.IdManhwa" class="btn btn-sm btn-outline-danger">Eliminar</a>
-                    </div>
-                </div>
+            <div class="calificacion">
+                @{
+                    int estrellas = (int)Math.Round((item.Calificacion ?? 0) / 2);
+                }
+                <span class="estrellas">@(new string('★', estrellas))@(new string('☆', 5 - estrellas))</span>
+                <span>@(item.Calificacion?.ToString("00.00") ?? "00.00")</span>
             </div>
-        </div>
+
+            <p>@item.NumeroCapitulos capítulos</p>
+            <p>@item.Generos</p>
+
+            <div class="etiquetas">
+                @foreach (var etq in (item.Etiquetas ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                {
+                    <span>@etq</span>
+                }
+            </div>
+
+            <div class="acciones">
+                <a asp-action="Edit" asp-route-id="@item.IdManhwa">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.IdManhwa">Eliminar</a>
+            </div>
+        </article>
     }
-</div>
+    }
+</main>

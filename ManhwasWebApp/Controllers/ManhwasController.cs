@@ -68,12 +68,60 @@ namespace ManhwasWebApp.Controllers
         }
 
         // GET: Manhwas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? busqueda, int? generoId, int? etiquetaId, string? orden)
         {
-            var lista = await _context.VwDetalleManhwas
-                .OrderByDescending(m => m.Calificacion)
-                .ToListAsync();
+            var query = _context.VwDetalleManhwas.AsQueryable();
 
+            // Búsqueda por título o autor
+            if (!string.IsNullOrWhiteSpace(busqueda))
+            {
+                query = query.Where(m =>
+                    m.TituloPrincipal.Contains(busqueda) ||
+                    m.Autores.Contains(busqueda));
+            }
+
+            // Filtro por género (consulta la relación real MANHWA_GENERO)
+            if (generoId.HasValue)
+            {
+                var idsConGenero = await _context.Manhwas
+                    .Where(m => m.IdGeneros.Any(g => g.IdGenero == generoId.Value))
+                    .Select(m => m.IdManhwa)
+                    .ToListAsync();
+
+                query = query.Where(m => idsConGenero.Contains(m.IdManhwa));
+            }
+
+            // Filtro por etiqueta (consulta la relación real MANHWA_ETIQUETA)
+            if (etiquetaId.HasValue)
+            {
+                var idsConEtiqueta = await _context.Manhwas
+                    .Where(m => m.IdEtiqueta.Any(e => e.IdEtiqueta == etiquetaId.Value))
+                    .Select(m => m.IdManhwa)
+                    .ToListAsync();
+
+                query = query.Where(m => idsConEtiqueta.Contains(m.IdManhwa));
+            }
+
+            // Orden
+            query = orden switch
+            {
+                "titulo" => query.OrderBy(m => m.TituloPrincipal),
+                "calificacion" => query.OrderByDescending(m => m.Calificacion),
+                "anio" => query.OrderByDescending(m => m.AnioPublicacion),
+                _ => query.OrderByDescending(m => m.Calificacion)
+            };
+
+            // Datos para llenar los <select> de filtros
+            ViewBag.Generos = await _context.Generos.OrderBy(g => g.Nombre).ToListAsync();
+            ViewBag.Etiquetas = await _context.Etiqueta.OrderBy(e => e.Nombre).ToListAsync();
+
+            // Para que el formulario "recuerde" lo que seleccionaste
+            ViewBag.Busqueda = busqueda;
+            ViewBag.GeneroId = generoId;
+            ViewBag.EtiquetaId = etiquetaId;
+            ViewBag.Orden = orden;
+
+            var lista = await query.ToListAsync();
             return View(lista);
         }
 
